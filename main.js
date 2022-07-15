@@ -11,6 +11,12 @@ config.apiKey = import.meta.env.VITE_API_KEY;
 
 const btn = document.getElementById("btnToggle");
 
+const geolocationOptions = {
+  maximumAge: 600000,
+  timeout: 0,
+  enableHighAccuracy: true,
+};
+
 const geoLayer = new GraphicsLayer({
   id: "geolocationLayer",
   title: "Geolocation Layer",
@@ -28,7 +34,8 @@ const view = new MapView({
 
 const track = new Track({
   view,
-  useHeadingEnabled: true,
+  // useHeadingEnabled: true,
+  geolocationOptions,
 });
 
 view.ui.add(track, "top-left");
@@ -42,22 +49,28 @@ view.when(() => {
 
 function nativeLocate() {
   // assume navigator
-  watchId = navigator.geolocation.watchPosition((position) => {
-    const point = new Point({
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-    });
-    geoLayer.removeAll();
-    geoLayer.add({
-      attributes: { ...position },
-      geometry: point,
-    });
+  watchId = navigator.geolocation.watchPosition(
+    (position) => {
+      const point = new Point({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      });
+      geoLayer.removeAll();
+      geoLayer.add({
+        attributes: { ...position },
+        geometry: point,
+      });
 
-    view.goTo({
-      target: point,
-      zoom: 16,
-    });
-  });
+      view.goTo({
+        target: point,
+        zoom: 16,
+      });
+    },
+    (error) => {
+      console.warn(error);
+    },
+    geolocationOptions
+  );
 }
 
 btn.addEventListener("click", () => {
