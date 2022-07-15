@@ -12,9 +12,9 @@ config.apiKey = import.meta.env.VITE_API_KEY;
 const btn = document.getElementById("btnToggle");
 
 const geolocationOptions = {
-  maximumAge: 600000,
-  timeout: 0,
-  enableHighAccuracy: true,
+  maximumAge: 0,
+  timeout: 6000,
+  enableHighAccuracy: false,
 };
 
 const geoLayer = new GraphicsLayer({
